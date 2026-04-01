@@ -10,19 +10,20 @@ from config import TELEGRAM_BOT_TOKEN, SUPER_ADMINS, TEMP_DIR
 from processor import process_pdf, process_image
 from quiz import send_quiz_from_csv
 
-# Logging setup
+# ---------------- Logging ----------------
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 
 # ---------------- Commands ----------------
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     await update.message.reply_text(
         f"Hello {user.first_name}! Send me a PDF or Image to create MCQ polls.\n"
-        "Use /permit <user_id> to give access to others."
+        "Use /permit <user_id> to give access to others.\n"
+        "PDF commands: /pdfm or /qbm\n"
+        "Image command: /image [prompt]"
     )
 
 async def permit(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -34,7 +35,6 @@ async def permit(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Usage: /permit <user_id>")
         return
     permitted_id = int(context.args[0])
-    # Save permitted users
     os.makedirs(TEMP_DIR, exist_ok=True)
     permitted_file = os.path.join(TEMP_DIR, "permitted_users.txt")
     with open(permitted_file, "a") as f:
